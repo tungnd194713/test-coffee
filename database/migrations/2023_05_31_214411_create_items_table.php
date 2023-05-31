@@ -13,9 +13,14 @@ return new class extends Migration
      */
     public function up()
     {
-        Schema::table('timesheets', function (Blueprint $table) {
-            $table->time('check_in')->nullable();
-            $table->time('check_out')->nullable();
+        Schema::create('items', function (Blueprint $table) {
+            $table->id();
+            $table->integer('restaurant_id');
+            $table->string('name');
+            $table->text('description')->nullable();
+            $table->integer('price');
+            $table->string('thumbnail_image')->nullable();
+            $table->timestamps();
         });
     }
 
@@ -26,9 +31,6 @@ return new class extends Migration
      */
     public function down()
     {
-        Schema::table('timesheets', function (Blueprint $table) {
-            Schema::dropColumns('check_in');
-            Schema::dropColumns('check_out');
-        });
+        Schema::dropIfExists('items');
     }
 };

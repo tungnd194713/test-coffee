@@ -13,10 +13,10 @@ return new class extends Migration
      */
     public function up()
     {
-        Schema::create('manager_users', function (Blueprint $table) {
+        Schema::create('restaurant_service', function (Blueprint $table) {
             $table->id();
-            $table->bigInteger('manager_id');
-            $table->bigInteger('user_id');
+            $table->integer('restaurant_id');
+            $table->integer('service_id');
             $table->timestamps();
         });
     }
@@ -28,6 +28,6 @@ return new class extends Migration
      */
     public function down()
     {
-        Schema::dropIfExists('manager_users');
+        Schema::dropIfExists('restaurant_service');
     }
 };
