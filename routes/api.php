@@ -20,3 +20,6 @@ Route::middleware('auth:sanctum')->get('/user', function (Request $request) {
 
 Route::post('/login', [App\Http\Controllers\AuthController::class, 'login'])->name('login');
 Route::post('/register', [App\Http\Controllers\AuthController::class, 'register'])->name('register');
+Route::prefix('restaurant')->group(function() {
+    Route::get('/', [App\Http\Controllers\RestaurantController::class, 'index'])->name('restaurant.index');
+});
