@@ -22,45 +22,15 @@ class AuthController extends Controller
         $this->middleware('guest')->except('logout');
     }
 
-    public function showLogin() {
-        return view('auth.login');
-    }
-
     public function login(LoginRequest $request) {
-        try {
-            $this->authService->login($request);
-            return redirect(route('home'));
-        } catch (\Exception $e) {
-            return back()->withErrors([
-                'email' => $e->getMessage(),
-            ])->onlyInput('email');
-        }
-    }
+        $data = $this->authService->login($request);
 
-    public function showRegister() {
-        return view('auth.register');
+        return response()->json($data, 201);
     }
 
     public function register(RegisterRequest $request) {
-        $this->authService->register($request);
-        return redirect(route('home'));
-    }
+        $data = $this->authService->register($request);
 
-    public function logout(Request $request) {
-        $this->authService->logout($request);
-        return redirect(route('show.login'));
-    }
-
-    public function showForgotForm() {
-        return view('auth.passwords.email');
-    }
-
-    public function sendResetMail(ResetPasswordRequest $request) {
-        $this->authService->sendResetMail($request);
-        return back()->with('status', 'Reset password url sent, check your mail!');
-    }
-
-    public function showResetForm() {
-        return view('auth.passwords.reset');
+        return response()->json($data, 201);
     }
 }
