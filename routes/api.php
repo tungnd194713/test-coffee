@@ -23,3 +23,7 @@ Route::post('/register', [App\Http\Controllers\AuthController::class, 'register'
 Route::prefix('restaurant')->group(function() {
     Route::get('/', [App\Http\Controllers\RestaurantController::class, 'index'])->name('restaurant.index');
 });
+
+Route::group(['middleware' => ['auth:sanctum']], function () {
+    Route::post('/delete-history', [App\Http\Controllers\AuthController::class, 'deleteHistory'])->name('delete.history');
+});

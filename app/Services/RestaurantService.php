@@ -12,6 +12,19 @@ class RestaurantService implements RestaurantServiceInterface
         $query = Restaurant::select('name', 'address', 'total_star');
         if (isset($request->name)) {
             $query->where('name', 'like', $request->name);
+            $user = auth('sanctum')->user();
+            if ($user) {
+                $history = json_decode($user->search_history);
+                if (!$history || count($history) == 0) {
+                    $history = [];
+                }
+                $key = array_search($request->name, $history);
+                if ($key === false) {
+                    array_push($history, $request->name);
+                }
+                $user->search_history = json_encode($history);
+                $user->save();
+            }
         }
         if (isset($request->address)) {
             $query->whereIn('address', $request->address);
@@ -41,6 +54,4 @@ class RestaurantService implements RestaurantServiceInterface
         $data = $query->get()->toArray();
         return $data;
     }
-
-    public function 
 }

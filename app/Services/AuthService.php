@@ -19,7 +19,7 @@ class AuthService implements AuthServiceInterface
         if (!Auth::guard('user')->attempt(['username' => $request->username, 'password' => $request->password, 'role' => $request->role], $request->remember)) {
             throw new \Exception("Invalid credentials");
         }
-        
+
         $user = User::where('username', $request->username)->first();
         $token = $user->createToken('authToken')->plainTextToken;
         return ['user' => $user, 'access_token' => $token];
@@ -41,13 +41,16 @@ class AuthService implements AuthServiceInterface
         }
     }
 
-    public function postHistory($request) {
+    public function deleteHistory($request) {
         $user = auth('sanctum')->user();
         $history = json_decode($user->search_history);
-        if (!$history || count($history) != 0) {
+        if (!$history || count($history) == 0) {
             $history = [];
         }
-        array_push($history, $request->search);
+        $key = array_search($request->search, $history);
+        if ($key !== false) {
+            unset($history[$key]);
+        }
         $user->search_history = json_encode($history);
         $user->save();
     }

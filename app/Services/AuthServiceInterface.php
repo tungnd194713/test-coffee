@@ -8,5 +8,7 @@ interface AuthServiceInterface
 
     public function register($request);
 
+    public function deleteHistory($request);
+
     // public function sendResetMail($request);
 }

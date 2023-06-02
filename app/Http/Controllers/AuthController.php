@@ -19,7 +19,7 @@ class AuthController extends Controller
 {
     public function __construct(protected AuthServiceInterface $authService)
     {
-        $this->middleware('guest')->except('logout');
+
     }
 
     public function login(LoginRequest $request) {
@@ -32,5 +32,11 @@ class AuthController extends Controller
         $data = $this->authService->register($request);
 
         return response()->json($data, 201);
+    }
+
+    public function deleteHistory(Request $request) {
+        $this->authService->deleteHistory($request);
+
+        return response('Success', 201);
     }
 }
