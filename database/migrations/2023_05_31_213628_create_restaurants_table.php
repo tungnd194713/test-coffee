@@ -21,7 +21,7 @@ return new class extends Migration
             $table->string('crowded_time');
             $table->integer('district');
             $table->string('name');
-            $table->string('logo')->nullable();
+            $table->text('logo')->nullable();
             $table->integer('view');
             $table->boolean('is_confirm')->default(false);
             $table->timestamps();

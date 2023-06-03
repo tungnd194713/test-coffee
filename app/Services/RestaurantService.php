@@ -26,8 +26,8 @@ class RestaurantService implements RestaurantServiceInterface
                 $user->save();
             }
         }
-        if (isset($request->address)) {
-            $query->whereIn('address', $request->address);
+        if (isset($request->district)) {
+            $query->whereIn('district', $request->district);
         }
         if (isset($request->service)) {
             $service = $request->service;
