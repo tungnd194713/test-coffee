@@ -11,7 +11,7 @@ class RestaurantService implements RestaurantServiceInterface
     public function list($request) {
         $query = Restaurant::select('id', 'name', 'address', 'total_star');
         if (isset($request->name)) {
-            $query->where('name', 'like', $request->name);
+            $query->where('name', 'like', '%'.$request->name.'%');
             $user = auth('sanctum')->user();
             if ($user) {
                 $history = json_decode($user->search_history);
