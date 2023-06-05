@@ -9,7 +9,7 @@ use Laravel\Sanctum\PersonalAccessToken;
 class RestaurantService implements RestaurantServiceInterface
 {
     public function list($request) {
-        $query = Restaurant::select('name', 'address', 'total_star');
+        $query = Restaurant::select('id', 'name', 'address', 'total_star');
         if (isset($request->name)) {
             $query->where('name', 'like', $request->name);
             $user = auth('sanctum')->user();
@@ -27,16 +27,18 @@ class RestaurantService implements RestaurantServiceInterface
             }
         }
         if (isset($request->district)) {
-            $query->whereIn('district', $request->district);
+            $districts = explode(',', $request->district);
+            $query->whereIn('district', $districts);
         }
         if (isset($request->service)) {
-            $service = $request->service;
-            $query->whereHas('services', function ($query) use ($service) {
-                $query->whereIn('name', $service);
+            $services = explode(',', $request->service);
+            $query->whereHas('services', function ($query) use ($services) {
+                $query->whereIn('name', $services);
             });
         }
         if (isset($request->star_rating)) {
-            $query->whereIn('total_star', $request->star_rating);
+            $star_ratings = explode(',', $request->star_rating);
+            $query->whereIn('total_star', $star_ratings);
         }
         if (isset($request->is_crowded)) {
             $current_time = date('H:i:s');
@@ -48,7 +50,7 @@ class RestaurantService implements RestaurantServiceInterface
         if(isset($hashedToken)) {
             $token = PersonalAccessToken::findToken($hashedToken);
             $user = $token->tokenable;
-            $query->select('name', 'address', 'total_star', DB::raw("6371 * 2 * ASIN(SQRT(POWER(SIN(({$user->longtitude} - latitude) * pi()/180 / 2), 2) + COS({$user->latitude} * pi()/180) * COS(latitude * pi()/180) * POWER(SIN(({$user->longtitude} - longitude) * pi()/180 / 2), 2))) AS distance"))
+            $query->select('id', 'name', 'address', 'total_star', DB::raw("6371 * 2 * ASIN(SQRT(POWER(SIN(({$user->longtitude} - latitude) * pi()/180 / 2), 2) + COS({$user->latitude} * pi()/180) * COS(latitude * pi()/180) * POWER(SIN(({$user->longtitude} - longitude) * pi()/180 / 2), 2))) AS distance"))
                   ->orderBy('distance');
         }
         $data = $query->get()->toArray();
