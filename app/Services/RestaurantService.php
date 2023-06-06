@@ -9,7 +9,7 @@ use Laravel\Sanctum\PersonalAccessToken;
 class RestaurantService implements RestaurantServiceInterface
 {
     public function list($request) {
-        $query = Restaurant::select('id', 'name', 'address', 'total_star');
+        $query = Restaurant::select('id', 'name', 'address', 'total_star', 'logo');
         if (isset($request->name)) {
             $query->where('name', 'like', '%'.$request->name.'%');
             $user = auth('sanctum')->user();
@@ -50,7 +50,7 @@ class RestaurantService implements RestaurantServiceInterface
         if(isset($hashedToken)) {
             $token = PersonalAccessToken::findToken($hashedToken);
             $user = $token->tokenable;
-            $query->select('id', 'name', 'address', 'total_star', DB::raw("6371 * 2 * ASIN(SQRT(POWER(SIN(({$user->longtitude} - latitude) * pi()/180 / 2), 2) + COS({$user->latitude} * pi()/180) * COS(latitude * pi()/180) * POWER(SIN(({$user->longtitude} - longitude) * pi()/180 / 2), 2))) AS distance"))
+            $query->select('id', 'name', 'address', 'total_star', 'logo', DB::raw("6371 * 2 * ASIN(SQRT(POWER(SIN(({$user->longtitude} - latitude) * pi()/180 / 2), 2) + COS({$user->latitude} * pi()/180) * COS(latitude * pi()/180) * POWER(SIN(({$user->longtitude} - longitude) * pi()/180 / 2), 2))) AS distance"))
                   ->orderBy('distance');
         }
         $data = $query->get()->toArray();
