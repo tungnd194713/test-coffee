@@ -31,7 +31,7 @@ class RestaurantService implements RestaurantServiceInterface
             $query->whereIn('district', $districts);
         }
         if (isset($request->service)) {
-            $services = explode(',', $request->service);
+            $services = array_filter(explode(',', $request->service));
             $query->whereHas('services', function ($query) use ($services) {
                 $query->whereIn('services.id', $services);
             }, '=', count($services));
