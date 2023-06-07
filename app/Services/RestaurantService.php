@@ -34,7 +34,7 @@ class RestaurantService implements RestaurantServiceInterface
             $services = explode(',', $request->service);
             $query->whereHas('services', function ($query) use ($services) {
                 $query->whereIn('services.id', $services);
-            });
+            }, '=', count($services));
         }
         if (isset($request->star_rating)) {
             $star_ratings = explode(',', $request->star_rating);
