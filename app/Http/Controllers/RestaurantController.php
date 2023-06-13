@@ -21,6 +21,14 @@ class RestaurantController extends Controller
         return response()->json($this->restaurantService->list($request));
     }
 
+    public function createReview(Request $request, $restaurant_id) {
+        return response()->json($this->restaurantService->createReview($request, $restaurant_id));
+    }
+
+    public function getReview(Request $request, $restaurant_id) {
+        return response()->json($this->restaurantService->listReview($request, $restaurant_id));
+    }
+
     /**
      * Store a newly created resource in storage.
      *
@@ -40,7 +48,7 @@ class RestaurantController extends Controller
      */
     public function show($id)
     {
-        //
+        return response()->json($this->restaurantService->detail($id));
     }
 
     /**

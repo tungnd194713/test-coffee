@@ -2,12 +2,19 @@
 
 namespace App\Services;
 
+use App\Helpers\S3Helper;
+use App\Models\Comment;
 use App\Models\Restaurant;
+use Illuminate\Contracts\Database\Eloquent\Builder;
 use Illuminate\Support\Facades\DB;
 use Laravel\Sanctum\PersonalAccessToken;
 
 class RestaurantService implements RestaurantServiceInterface
 {
+    public function detail($id) {
+        return ['data' => Restaurant::findOrFail($id), 'status' => 200];
+    }
+
     public function list($request) {
         $query = Restaurant::select('id', 'name', 'address', 'total_star', 'logo');
         if (isset($request->name)) {
@@ -55,5 +62,43 @@ class RestaurantService implements RestaurantServiceInterface
         }
         $data = $query->get()->toArray();
         return $data;
+    }
+
+    public function listReview($request, $restaurant_id) {
+        $restaurant = Restaurant::findOrFail($restaurant_id);
+
+        $listReview = $restaurant->comments()->with('user:id,username,avatar')->get()->toArray();
+        return ['data' => $listReview, 'status' => 200];
+    }
+
+    public function createReview($request, $restaurant_id) {
+        $request->validate([
+            'star_rating' => 'required|numeric|min:1|max:5',
+            'content' => 'string',
+            'image' => 'nullable|image|max:2048', // Assuming max file size of 2MB
+        ]);
+
+        // Find the restaurant
+        $restaurant = Restaurant::findOrFail($restaurant_id);
+
+        // Create the review
+        $review = new Comment();
+        $review->star_rating = $request->input('star_rating');
+        $review->content = $request->input('content');
+        $review->restaurant()->associate($restaurant);
+        $review->user()->associate($request->user());
+        $review->save();
+
+        // Handle the image upload
+        if ($request->hasFile('image')) {
+            $image = $request->file('image');
+            $imagePath = S3Helper::uploadToS3($image, 'review_images');
+
+            // Store the image path in the review model
+            $review->image = $imagePath;
+            $review->save();
+        }
+
+        return ['message' => 'Create review successfully', 'status' => 200];
     }
 }

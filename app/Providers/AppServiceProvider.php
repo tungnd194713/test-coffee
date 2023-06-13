@@ -16,6 +16,7 @@ class AppServiceProvider extends ServiceProvider
         $models = [
             'Auth',
             'Restaurant',
+            'User',
         ];
         foreach ($models as $model)
             app()->bind(

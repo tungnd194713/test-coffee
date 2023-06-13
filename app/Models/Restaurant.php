@@ -23,13 +23,14 @@ class Restaurant extends Model
 
     protected $casts = [
         'is_confirm' => 'boolean',
-        'close_time' => 'time',
-        'open_time' => 'time',
-        'crowded_time' => 'time',
     ];
 
     public function services()
     {
         return $this->belongsToMany(Service::class);
+    }
+
+    public function comments() {
+        return $this->hasMany(Comment::class);
     }
 }

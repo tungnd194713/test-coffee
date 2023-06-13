@@ -12,9 +12,9 @@ class User extends Authenticatable
 {
     use HasApiTokens, HasFactory, Notifiable;
 
-    const ROLE_ADMIN = 1;
-    const ROLE_MANAGER = 2;
-    const ROLE_USER = 3;
+    const ROLE_RESTAURANT = 1;
+    const ROLE_USER = 2;
+    const ROLE_ADMIN = 3;
 
     /**
      * The attributes that are mass assignable.
@@ -28,6 +28,13 @@ class User extends Authenticatable
         'password',
         'avatar',
         'role',
+        'address',
+        'search_history',
+        'latitude',
+        'longitude',
+        'phone_number',
+        'gender',
+        'birthday',
     ];
 
     /**
@@ -47,13 +54,10 @@ class User extends Authenticatable
      */
     protected $casts = [
         'email_verified_at' => 'datetime',
+        'birthday' => 'date',
     ];
 
-    public function timesheets() {
-        return $this->hasMany(Timesheet::class, 'user_id', 'id');
-    }
-
-    public function tasks() {
-        return $this->hasMany(Task::class, 'user_id', 'id');
+    public function comments() {
+        return $this->hasMany(Comment::class);
     }
 }

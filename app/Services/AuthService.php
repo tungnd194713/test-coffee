@@ -22,21 +22,19 @@ class AuthService implements AuthServiceInterface
 
         $user = User::where('username', $request->username)->first();
         $token = $user->createToken('authToken')->plainTextToken;
-        return ['user' => $user, 'access_token' => $token];
+        return ['user' => $user, 'access_token' => $token, 'status' => 200];
     }
 
     public function register($request) {
         $user = User::create([
-            'name' => $request?->name,
-            'age' => $request?->age,
             'username' => $request?->username,
-            'password' => Hash::make($request?->username),
+            'password' => Hash::make($request?->password),
             'role' => User::ROLE_USER,
         ]);
         if ($user) {
             if (Auth::guard('user')->login($user)) {
                 $token = $user->createToken('authToken')->plainTextToken;
-                return ['user' => $user, 'access_token' => $token];
+                return ['user' => $user, 'access_token' => $token, 'status' => 200];
             }
         }
     }
