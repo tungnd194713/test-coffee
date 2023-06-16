@@ -17,7 +17,7 @@ class AuthService implements AuthServiceInterface
 {
     public function login($request) {
         if (!Auth::guard('user')->attempt(['username' => $request->username, 'password' => $request->password, 'role' => $request->role], $request->remember)) {
-            throw new \Exception("Invalid credentials");
+            abort(401, 'Invalid credentials');
         }
 
         $user = User::where('username', $request->username)->first();
