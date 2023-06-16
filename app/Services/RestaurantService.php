@@ -12,7 +12,7 @@ use Laravel\Sanctum\PersonalAccessToken;
 class RestaurantService implements RestaurantServiceInterface
 {
     public function detail($id) {
-        return ['data' => Restaurant::findOrFail($id), 'status' => 200];
+        return ['data' => Restaurant::with('services')->findOrFail($id), 'status' => 200];
     }
 
     public function list($request) {
@@ -79,7 +79,14 @@ class RestaurantService implements RestaurantServiceInterface
         ]);
 
         // Find the restaurant
-        $restaurant = Restaurant::findOrFail($restaurant_id);
+        $restaurant = Restaurant::with('comments')->findOrFail($restaurant_id);
+        $starValue = $restaurant->comments->pluck('star_rating')->toArray();
+        $starValue[] = $request->input('star_rating');
+        $restaurant->total_star = array_reduce($starValue, function($carried, $value) use ($starValue) {
+            return ($carried === null ? 0 : $carried) + $value / count($starValue);
+        }, null);
+        $restaurant->save();
+        
 
         // Create the review
         $review = new Comment();
