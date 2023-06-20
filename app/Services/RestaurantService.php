@@ -60,7 +60,7 @@ class RestaurantService implements RestaurantServiceInterface
             $query->select('id', 'name', 'address', 'total_star', 'logo', DB::raw("6371 * 2 * ASIN(SQRT(POWER(SIN(({$user->longtitude} - latitude) * pi()/180 / 2), 2) + COS({$user->latitude} * pi()/180) * COS(latitude * pi()/180) * POWER(SIN(({$user->longtitude} - longitude) * pi()/180 / 2), 2))) AS distance"))
                   ->orderBy('distance');
         }
-        $data = $query->offset($request->current_page - 1)->limit($request->per_page)->get()->toArray();
+        $data = $query->offset(($request->current_page - 1) * $request->per_page)->limit($request->per_page)->get()->toArray();
         $data['current_page'] = $request->current_page;
         $data['per_page'] = $request->per_page;
         return $data;
@@ -69,7 +69,7 @@ class RestaurantService implements RestaurantServiceInterface
     public function listReview($request, $restaurant_id) {
         $restaurant = Restaurant::findOrFail($restaurant_id);
 
-        $listReview = $restaurant->comments()->with('user:id,username,avatar')->offset($request->current_page - 1)->limit($request->per_page)->get()->toArray();
+        $listReview = $restaurant->comments()->with('user:id,username,avatar')->offset(($request->current_page - 1) * $request->per_page)->limit($request->per_page)->get()->toArray();
         $listReview['current_page'] = $request->current_page;
         $listReview['per_page'] = $request->per_page;
         return ['data' => $listReview, 'status' => 200];
