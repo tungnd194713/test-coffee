@@ -12,7 +12,7 @@ use Laravel\Sanctum\PersonalAccessToken;
 class RestaurantService implements RestaurantServiceInterface
 {
     public function detail($id) {
-        return ['data' => Restaurant::with('services')->findOrFail($id), 'status' => 200];
+        return ['data' => Restaurant::with('services')->with('items')->findOrFail($id), 'status' => 200];
     }
 
     public function list($request) {
