@@ -30,9 +30,13 @@ class AuthService implements AuthServiceInterface
             'username' => $request?->username,
             'password' => Hash::make($request?->password),
             'role' => User::ROLE_USER,
+            'name' => '',
+            'address' => '',
+            'latitude' => 0,
+            'longitude' => 0,
         ]);
         if ($user) {
-            if (Auth::guard('user')->login($user)) {
+            if (Auth::guard('user')->attempt(['username' => $request->username, 'password' => $request->password, 'role' => $request->role])) {
                 $token = $user->createToken('authToken')->plainTextToken;
                 return ['user' => $user, 'access_token' => $token, 'status' => 200];
             }

@@ -28,7 +28,7 @@ class AuthController extends Controller
         return response()->json($data, 200);
     }
 
-    public function register(RegisterRequest $request) {
+    public function register(Request $request) {
         $data = $this->authService->register($request);
 
         return response()->json($data, 200);

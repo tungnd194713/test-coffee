@@ -61,17 +61,13 @@ class RestaurantService implements RestaurantServiceInterface
                   ->orderBy('distance');
         }
         $data = $query->offset(($request->current_page - 1) * $request->per_page)->limit($request->per_page)->get()->toArray();
-        $data['current_page'] = $request->current_page;
-        $data['per_page'] = $request->per_page;
         return $data;
     }
 
     public function listReview($request, $restaurant_id) {
         $restaurant = Restaurant::findOrFail($restaurant_id);
 
-        $listReview = $restaurant->comments()->with('user:id,username,avatar')->offset(($request->current_page - 1) * $request->per_page)->limit($request->per_page)->get()->toArray();
-        $listReview['current_page'] = $request->current_page;
-        $listReview['per_page'] = $request->per_page;
+        $listReview = Comment::where('restaurant_id', $restaurant->id)->with('user:id,username,avatar')->offset(($request->current_page - 1) * $request->per_page)->limit($request->per_page)->get()->toArray();
         return ['data' => $listReview, 'status' => 200];
     }
 
@@ -90,7 +86,7 @@ class RestaurantService implements RestaurantServiceInterface
             return ($carried === null ? 0 : $carried) + $value / count($starValue);
         }, null);
         $restaurant->save();
-        
+
 
         // Create the review
         $review = new Comment();
