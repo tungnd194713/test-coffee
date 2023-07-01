@@ -17,7 +17,7 @@ class UserService implements UserServiceInterface
             $validatedData = $request->validate([
                 'name' => 'string',
                 'email' => 'email',
-                'avatar' => 'image|mimes:jpeg,png,jpg,gif|max:2048',
+                'avatar' => '',
                 'address' => 'string',
                 'latitude' => 'numeric',
                 'longitude' => 'numeric',
@@ -28,18 +28,17 @@ class UserService implements UserServiceInterface
         } catch (\Exception $e) {
             return ['data' => $e, 'status' => 402];
         }
-        
+
         $usedUser = User::where('email', $validatedData['email'])->first();
-        if ($usedUser?->id == $user->id) {
+        if ($usedUser?->id !== $user->id) {
             return ['data' => 'Email used', 'status' => 401];
         }
 
         // Update user profile
         $user->update($validatedData);
-
         // Handle avatar update if provided
-        if ($request->hasFile('avatar')) {
-            $avatar = $request->file('avatar');
+        if ($request->has('avatar')) {
+            $avatar = $request->avatar; //your base64 encoded data
             $avatarPath = S3Helper::uploadToS3($avatar, 'user_avatars');
             $user->avatar = $avatarPath;
             $user->save();
