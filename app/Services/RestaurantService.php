@@ -53,10 +53,7 @@ class RestaurantService implements RestaurantServiceInterface
             $query->where('crowded_time', $compare, $current_time);
         }
 
-        $hashedToken = $request->bearerToken();
-        if(isset($hashedToken)) {
-            $token = PersonalAccessToken::findToken($hashedToken);
-            $user = $token->tokenable;
+        if($request->user()) {
             $query->select('id', 'name', 'address', 'total_star', 'logo', DB::raw("6371 * 2 * ASIN(SQRT(POWER(SIN(({$user->longtitude} - latitude) * pi()/180 / 2), 2) + COS({$user->latitude} * pi()/180) * COS(latitude * pi()/180) * POWER(SIN(({$user->longtitude} - longitude) * pi()/180 / 2), 2))) AS distance"))
                   ->orderBy('distance');
         }
