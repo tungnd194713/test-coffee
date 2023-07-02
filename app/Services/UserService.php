@@ -23,16 +23,19 @@ class UserService implements UserServiceInterface
                 'longitude' => 'numeric',
                 'phone_number' => 'string',
                 'gender' => 'numeric',
-                'birthday' => 'date',
+                'birthday' => 'string',
             ]);
         } catch (\Exception $e) {
-            return ['data' => $e, 'status' => 402];
+            return ['data' => $e->getMessage(), 'status' => 402];
         }
 
-        $usedUser = User::where('email', $validatedData['email'])->first();
-        if ($usedUser?->id !== $user->id) {
-            return ['data' => 'Email used', 'status' => 401];
+        if (isset($validatedData['email'])) {
+            $usedUser = User::where('email', $validatedData['email'])->first();
+            if ($usedUser?->id !== $user->id) {
+                return ['data' => 'Email used', 'status' => 401];
+            }
         }
+
 
         // Update user profile
         $user->update($validatedData);
