@@ -43,8 +43,10 @@ class UserService implements UserServiceInterface
         if ($request->has('avatar')) {
             $avatar = $request->avatar; //your base64 encoded data
             $avatarPath = S3Helper::uploadToS3($avatar, 'user_avatars');
+            $oldAvatar = $user->avatar;
             $user->avatar = $avatarPath;
             $user->save();
+            S3Helper::deleteFromS3($oldAvatar, 'user_avatars');
         }
 
         return ['message' => 'Profile updated successfully', 'status' => 200];
