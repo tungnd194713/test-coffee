@@ -17,7 +17,6 @@ class UserService implements UserServiceInterface
             $validatedData = $request->validate([
                 'name' => 'string',
                 'email' => 'email',
-                'avatar' => '',
                 'address' => 'string',
                 'latitude' => 'numeric',
                 'longitude' => 'numeric',
