@@ -21,10 +21,9 @@ class S3Helper
         return Storage::disk('s3')->url($filePath);
     }
 
-    public static function deleteFromS3($path, $position) {
-        $filePath = $position . '/' . $path;
-        if(Storage::disk('s3')->exists($filePath)) {
-            Storage::disk('s3')->delete($filePath);
+    public static function deleteFromS3($path) {
+        if(Storage::disk('s3')->exists(basename($path))) {
+            Storage::disk('s3')->delete(basename($path));
         }
     }
 }
