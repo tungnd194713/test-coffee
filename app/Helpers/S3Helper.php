@@ -2,6 +2,7 @@
 
 namespace App\Helpers;
 
+use Illuminate\Support\Facades\Log;
 use Illuminate\Support\Facades\Storage;
 use Illuminate\Support\Str;
 
@@ -22,6 +23,7 @@ class S3Helper
     }
 
     public static function deleteFromS3($path) {
+        Log::info(basename($path));
         if(Storage::disk('s3')->exists(basename($path))) {
             Storage::disk('s3')->delete(basename($path));
         }
