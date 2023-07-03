@@ -19,6 +19,8 @@ class Restaurant extends Model
         'logo',
         'view',
         'is_confirm',
+        'latitude',
+        'longitude',
     ];
 
     protected $casts = [
@@ -27,7 +29,7 @@ class Restaurant extends Model
 
     public function services()
     {
-        return $this->belongsToMany(Service::class);
+        return $this->belongsToMany(Service::class, 'restaurant_service');
     }
 
     public function comments() {
@@ -35,6 +37,6 @@ class Restaurant extends Model
     }
 
     public function items() {
-        return $this->hasMany(Item::class);
+        return $this->hasMany(Item::class, 'restaurant_id', 'id');
     }
 }

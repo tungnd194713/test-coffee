@@ -45,7 +45,9 @@ class UserService implements UserServiceInterface
             $oldAvatar = $user->avatar;
             $user->avatar = $avatarPath;
             $user->save();
-            S3Helper::deleteFromS3($oldAvatar, 'user_avatars');
+            if ($oldAvatar) {
+                S3Helper::deleteFromS3($oldAvatar, 'user_avatars');
+            }
         }
 
         return ['message' => 'Profile updated successfully', 'status' => 200];

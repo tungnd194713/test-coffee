@@ -61,4 +61,8 @@ class User extends Authenticatable
     public function comments() {
         return $this->hasMany(Comment::class);
     }
+
+    public function restaurants() {
+        return $this->belongsToMany(Restaurant::class, 'user_restaurant');
+    }
 }

@@ -105,4 +105,63 @@ class RestaurantService implements RestaurantServiceInterface
 
         return ['message' => 'Create review successfully', 'status' => 200];
     }
+
+    public function createStore($request) {
+        DB::beginTransaction();
+        try {
+            $restaurant = Restaurant::create([
+                'address' => $request->address,
+                'district' => rand(1, 10),
+                'name' => $request->name,
+                'logo' => '',
+                'view' => 0,
+                'total_star' => 0,
+                'crowded_time' => $request->crowded_time,
+                'end_crowded_time' => $request->end_crowded_time,
+                'latitude' => $request->latitude,
+                'longitude' => $request->longitude,
+            ]);
+
+            if ($request->has('logo')) {
+                $avatar = $request->logo; //your base64 encoded data
+                $avatarPath = S3Helper::uploadToS3($avatar, 'restaurant_logo');
+                $oldAvatar = $restaurant->logo;
+                $restaurant->logo = $avatarPath;
+                $restaurant->save();
+                if ($oldAvatar) {
+                    S3Helper::deleteFromS3($oldAvatar, 'restaurant_logo');
+                }
+            }
+
+            if ($restaurant) {
+                $request->user()->restaurants()->attach($restaurant->id);
+
+                $items = array_map(function($item) use ($restaurant) {
+                    return [
+                        'restaurant_id' => $restaurant->id,
+                        'name' => $item['name'],
+                        'description' => $item['description'],
+                        'price' => $item['price'],
+                    ];
+                }, $request->menu);
+                if (count($items)) {
+                    $restaurant->items()->insert($items);
+                }
+
+                $services = $request->services;
+                if (count($services)) {
+                    foreach($services as $service) {
+                        $restaurant->services()->attach($service);
+                    }
+                }
+            }
+            DB::commit();
+        } catch (\Exception $e) {
+            dd($e->getMessage());
+            abort(500, $e->getMessage());
+            DB::rollBack();
+        }
+
+        return ['message' => 'Create restaurant successfully', 'status' => 200];
+    }
 }

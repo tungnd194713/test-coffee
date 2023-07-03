@@ -9,7 +9,7 @@ class RestaurantController extends Controller
 {
     public function __construct(protected RestaurantServiceInterface $restaurantService)
     {
-        
+
     }
     /**
      * Display a listing of the resource.
@@ -37,7 +37,7 @@ class RestaurantController extends Controller
      */
     public function store(Request $request)
     {
-        //
+        return response()->json($this->restaurantService->createStore($request));
     }
 
     /**

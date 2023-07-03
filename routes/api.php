@@ -33,4 +33,5 @@ Route::group(['middleware' => ['auth:sanctum']], function () {
     Route::get('/get-profile', [App\Http\Controllers\UserController::class, 'detail'])->name('get.profile');
     Route::post('/delete-history', [App\Http\Controllers\AuthController::class, 'deleteHistory'])->name('delete.history');
     Route::post('/update-profile', [App\Http\Controllers\UserController::class, 'updateProfile'])->name('update.profile');
+    Route::post('/create-store', [App\Http\Controllers\RestaurantController::class, 'store'])->name('create.store');
 });
