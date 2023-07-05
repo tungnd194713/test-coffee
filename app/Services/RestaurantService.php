@@ -66,7 +66,21 @@ class RestaurantService implements RestaurantServiceInterface
     public function listReview($request, $restaurant_id) {
         $restaurant = Restaurant::findOrFail($restaurant_id);
 
-        $listReview = Comment::where('restaurant_id', $restaurant->id)->with('user:id,username,avatar')->offset(($request->current_page - 1) * $request->per_page)->limit($request->per_page)->get()->toArray();
+        $query = Comment::where('restaurant_id', $restaurant->id);
+        if ($request->has('star_rating')) {
+            $query->where('star_rating', $request->star_rating);
+        }
+
+        if ($request->has('order_by')) {
+            if ($request->order_by == 'date') {
+                $query->orderBy('created_at', 'desc');
+            }
+            if ($request->order_by == 'star_rating') {
+                $query->orderBy('star_rating', 'desc');
+            }
+        }
+
+        $listReview = $query->with('user:id,username,avatar')->offset(($request->current_page - 1) * $request->per_page)->limit($request->per_page)->get()->toArray();
         return ['data' => $listReview, 'status' => 200];
     }
 
