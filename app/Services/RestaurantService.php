@@ -178,7 +178,6 @@ class RestaurantService implements RestaurantServiceInterface
         try {
             $store->name = $request?->name;
             $store->address = $request?->address;
-            $store->district = $request?->district;
             $store->crowded_time = $request?->crowded_time;
             $store->end_crowded_time = $request?->end_crowded_time;
             $store->latitude = $request?->latitude;
