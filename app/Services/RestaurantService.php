@@ -4,9 +4,11 @@ namespace App\Services;
 
 use App\Helpers\S3Helper;
 use App\Models\Comment;
+use App\Models\Item;
 use App\Models\Restaurant;
 use Illuminate\Contracts\Database\Eloquent\Builder;
 use Illuminate\Support\Facades\DB;
+use Illuminate\Support\Facades\Log;
 use Laravel\Sanctum\PersonalAccessToken;
 
 class RestaurantService implements RestaurantServiceInterface
@@ -125,12 +127,8 @@ class RestaurantService implements RestaurantServiceInterface
             if ($request->has('logo')) {
                 $avatar = $request->logo; //your base64 encoded data
                 $avatarPath = S3Helper::uploadToS3($avatar, 'restaurant_logo');
-                $oldAvatar = $restaurant->logo;
                 $restaurant->logo = $avatarPath;
                 $restaurant->save();
-                if ($oldAvatar) {
-                    S3Helper::deleteFromS3($oldAvatar, 'restaurant_logo');
-                }
             }
 
             if ($restaurant) {
@@ -162,6 +160,69 @@ class RestaurantService implements RestaurantServiceInterface
             DB::rollBack();
         }
 
-        return ['message' => 'Create restaurant successfully', 'status' => 200];
+        return ['data' => $restaurant, 'status' => 200];
+    }
+
+    public function listOwnedStore($request) {
+        $owner = $request->user();
+        if ($request->has('per_page') && $request->has('current_page')) {
+            return $owner->restaurants()->select('id', 'name', 'address', 'total_star', 'logo')->offset(($request->current_page - 1) * $request->per_page)->limit($request->per_page)->get()->toArray();
+        }
+
+        return $owner->restaurants()->select('id', 'name', 'address', 'total_star', 'logo')->get()->toArray();
+    }
+
+    public function updateStore($request, $storeId) {
+        $store = Restaurant::findOrFail($storeId);
+        DB::beginTransaction();
+        try {
+            $store->name = $request?->name;
+            $store->address = $request?->address;
+            $store->district = $request?->district;
+            $store->crowded_time = $request?->crowded_time;
+            $store->end_crowded_time = $request?->end_crowded_time;
+            $store->latitude = $request?->latitude;
+            $store->longitude = $request?->longitude;
+            $store->save();
+
+            if ($request->has('logo')) {
+                $avatar = $request->logo; //your base64 encoded data
+                $avatarPath = S3Helper::uploadToS3($avatar, 'restaurant_logo');
+                $oldLogo = $store->logo;
+                $store->logo = $avatarPath;
+                $store->save();
+                if ($oldLogo) {
+                    S3Helper::deleteFromS3($oldLogo, 'restaurant_logo');
+                }
+            }
+
+            if ($request->has('menu')) {
+                Item::where('restaurant_id', $storeId)->delete();
+                $items = array_map(function($item) use ($storeId) {
+                    return [
+                        'restaurant_id' => $storeId,
+                        'name' => $item['name'],
+                        'description' => $item['description'],
+                        'price' => $item['price'],
+                    ];
+                }, $request->menu);
+                if (count($items)) {
+                    $store->items()->insert($items);
+                }
+            }
+
+            if ($request->has('services')) {
+                $store->services()->detach();
+                foreach($request->services as $service) {
+                    $store->services()->attach($service);
+                }
+            }
+            DB::commit();
+        } catch (\Exception $e) {
+            DB::rollBack();
+            Log::info($e);
+        }
+
+        return ['data' => $store, 'status' => 200];
     }
 }

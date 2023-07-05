@@ -29,6 +29,14 @@ class RestaurantController extends Controller
         return response()->json($this->restaurantService->listReview($request, $restaurant_id));
     }
 
+    public function listOwnedStore(Request $request) {
+        return response()->json($this->restaurantService->listOwnedStore($request));
+    }
+
+    public function updateStore(Request $request, $restaurant_id) {
+        return response()->json($this->restaurantService->updateStore($request, $restaurant_id));
+    }
+
     /**
      * Store a newly created resource in storage.
      *

@@ -13,4 +13,8 @@ interface RestaurantServiceInterface
     public function listReview($request, $restaurant_id);
 
     public function createStore($request);
+
+    public function listOwnedStore($request);
+
+    public function updateStore($request, $storeId);
 }

@@ -34,4 +34,6 @@ Route::group(['middleware' => ['auth:sanctum']], function () {
     Route::post('/delete-history', [App\Http\Controllers\AuthController::class, 'deleteHistory'])->name('delete.history');
     Route::post('/update-profile', [App\Http\Controllers\UserController::class, 'updateProfile'])->name('update.profile');
     Route::post('/create-store', [App\Http\Controllers\RestaurantController::class, 'store'])->name('create.store');
+    Route::get('/owned-restaurants', [App\Http\Controllers\RestaurantController::class, 'listOwnedStore'])->name('get.owned');
+    Route::put('/owned-restaurants/{restaurant_id}', [App\Http\Controllers\RestaurantController::class, 'listOwnedStore'])->name('get.owned');
 });
