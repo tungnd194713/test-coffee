@@ -27,4 +27,14 @@ class S3Helper
             Storage::disk('s3')->delete($filePath);
         }
     }
+
+    public static function uploadDefaultToS3($file, $position)
+    {
+        $imageName = Str::random(20) . '.' . $file->getClientOriginalExtension();
+        $filePath = $position . '/' . $imageName;
+        // Upload the file to AWS S3
+        Storage::disk('s3')->put($filePath, file_get_contents($file));
+
+        return Storage::disk('s3')->url($filePath);
+    }
 }

@@ -112,7 +112,7 @@ class RestaurantService implements RestaurantServiceInterface
         // Handle the image upload
         if ($request->hasFile('image')) {
             $image = $request->file('image');
-            $imagePath = S3Helper::uploadToS3($image, 'review_images');
+            $imagePath = S3Helper::uploadDefaultToS3($image, 'review_images');
 
             // Store the image path in the review model
             $review->image = $imagePath;
