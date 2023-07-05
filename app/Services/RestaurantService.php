@@ -68,6 +68,7 @@ class RestaurantService implements RestaurantServiceInterface
 
         $query = Comment::where('restaurant_id', $restaurant->id);
         if ($request->has('star_rating')) {
+            dd($request->star_rating);
             $query->where('star_rating', $request->star_rating);
         }
 
