@@ -166,10 +166,10 @@ class RestaurantService implements RestaurantServiceInterface
     public function listOwnedStore($request) {
         $owner = $request->user();
         if ($request->has('per_page') && $request->has('current_page')) {
-            return $owner->restaurants()->select('id', 'name', 'address', 'total_star', 'logo')->offset(($request->current_page - 1) * $request->per_page)->limit($request->per_page)->get()->toArray();
+            return $owner->restaurants()->offset(($request->current_page - 1) * $request->per_page)->limit($request->per_page)->get()->toArray();
         }
 
-        return $owner->restaurants()->select('id', 'name', 'address', 'total_star', 'logo')->get()->toArray();
+        return $owner->restaurants()->get()->toArray();
     }
 
     public function updateStore($request, $storeId) {
