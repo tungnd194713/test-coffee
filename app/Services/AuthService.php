@@ -29,7 +29,7 @@ class AuthService implements AuthServiceInterface
         $user = User::create([
             'username' => $request?->username,
             'password' => Hash::make($request?->password),
-            'role' => User::ROLE_USER,
+            'role' => $request->role,
             'name' => '',
             'address' => '',
             'latitude' => 0,
