@@ -155,7 +155,7 @@ class RestaurantService implements RestaurantServiceInterface
                         'description' => $item['description'],
                         'price' => $item['price'],
                     ];
-                }, $request->menu);
+                }, $request->items);
                 if (count($items)) {
                     $restaurant->items()->insert($items);
                 }
@@ -209,7 +209,7 @@ class RestaurantService implements RestaurantServiceInterface
                 }
             }
 
-            if ($request->has('menu')) {
+            if ($request->has('items')) {
                 Item::where('restaurant_id', $storeId)->delete();
                 $items = array_map(function($item) use ($storeId) {
                     return [
@@ -218,7 +218,7 @@ class RestaurantService implements RestaurantServiceInterface
                         'description' => $item['description'],
                         'price' => $item['price'],
                     ];
-                }, $request->menu);
+                }, $request->items);
                 if (count($items)) {
                     $store->items()->insert($items);
                 }
