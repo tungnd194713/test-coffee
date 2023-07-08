@@ -20,7 +20,7 @@ class AuthService implements AuthServiceInterface
             abort(401, 'Invalid credentials');
         }
 
-        $user = User::where('username', $request->username)->first();
+        $user = User::where('username', $request->username)->with('restaurants')->first();
         $token = $user->createToken('authToken')->plainTextToken;
         return ['user' => $user, 'access_token' => $token, 'status' => 200];
     }

@@ -9,7 +9,7 @@ class UserController extends Controller
 {
     public function __construct(protected UserServiceInterface $userService)
     {
-        
+
     }
 
     public function detail(Request $request) {

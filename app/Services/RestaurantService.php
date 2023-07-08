@@ -134,14 +134,17 @@ class RestaurantService implements RestaurantServiceInterface
                 'total_star' => 0,
                 'crowded_time' => $request->crowded_time,
                 'end_crowded_time' => $request->end_crowded_time,
-                'latitude' => $request->latitude,
-                'longitude' => $request->longitude,
+                'latitude' => $request->latitude ?? 0,
+                'longitude' => $request->longitude ?? 0,
             ]);
 
-            if ($request->has('logo')) {
+            if ($request->has('logo') && (bool) preg_match('/^[a-zA-Z0-9\/\r\n+]*={0,2}$/', $request->logo) && $request->logo) {
                 $avatar = $request->logo; //your base64 encoded data
                 $avatarPath = S3Helper::uploadToS3($avatar, 'restaurant_logo');
                 $restaurant->logo = $avatarPath;
+                $restaurant->save();
+            } else {
+                $restaurant->logo = 'https://img.lovepik.com/free-png/20211109/lovepik-store-icon-png-image_400680314_wh1200.png';
                 $restaurant->save();
             }
 
@@ -169,7 +172,6 @@ class RestaurantService implements RestaurantServiceInterface
             }
             DB::commit();
         } catch (\Exception $e) {
-            dd($e->getMessage());
             abort(500, $e->getMessage());
             DB::rollBack();
         }
@@ -198,7 +200,7 @@ class RestaurantService implements RestaurantServiceInterface
             $store->longitude = $request?->longitude;
             $store->save();
 
-            if ($request->has('logo')) {
+            if ($request->has('logo') && (bool) preg_match('/^[a-zA-Z0-9\/\r\n+]*={0,2}$/', $request->logo) && $request->logo) {
                 $avatar = $request->logo; //your base64 encoded data
                 $avatarPath = S3Helper::uploadToS3($avatar, 'restaurant_logo');
                 $oldLogo = $store->logo;
@@ -207,6 +209,9 @@ class RestaurantService implements RestaurantServiceInterface
                 if ($oldLogo) {
                     S3Helper::deleteFromS3($oldLogo, 'restaurant_logo');
                 }
+            } else {
+                $store->logo = 'https://img.lovepik.com/free-png/20211109/lovepik-store-icon-png-image_400680314_wh1200.png';
+                $store->save();
             }
 
             if ($request->has('items')) {
