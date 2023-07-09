@@ -200,7 +200,7 @@ class RestaurantService implements RestaurantServiceInterface
             $store->longitude = $request?->longitude;
             $store->save();
 
-            if ($request->has('logo')) {
+            if ($request->has('logo') && $store->logo) {
                 $avatar = $request->logo; //your base64 encoded data
                 $avatarPath = S3Helper::uploadToS3($avatar, 'restaurant_logo');
                 $oldLogo = $store->logo;
