@@ -200,7 +200,7 @@ class RestaurantService implements RestaurantServiceInterface
             $store->longitude = $request?->longitude;
             $store->save();
 
-            if ($request->has('logo') && $store->logo) {
+            if ($request->has('logo')) {
                 $avatar = $request->logo; //your base64 encoded data
                 $avatarPath = S3Helper::uploadToS3($avatar, 'restaurant_logo');
                 $oldLogo = $store->logo;
@@ -209,7 +209,7 @@ class RestaurantService implements RestaurantServiceInterface
                 if ($oldLogo) {
                     S3Helper::deleteFromS3($oldLogo, 'restaurant_logo');
                 }
-            } else {
+            } else if (!$store->logo) {
                 $store->logo = 'https://img.lovepik.com/free-png/20211109/lovepik-store-icon-png-image_400680314_wh1200.png';
                 $store->save();
             }
