@@ -14,6 +14,7 @@ class Restaurant extends Model
         'open_time',
         'close_time',
         'crowded_time',
+        'end_crowded_time',
         'district',
         'name',
         'logo',

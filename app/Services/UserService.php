@@ -6,6 +6,7 @@ use App\Helpers\S3Helper;
 use App\Mail\ResetPassword;
 use App\Models\PasswordResets;
 use App\Models\User;
+use Illuminate\Support\Facades\Log;
 use Illuminate\Support\Str;
 use Illuminate\Support\Facades\Storage;
 
@@ -30,7 +31,7 @@ class UserService implements UserServiceInterface
 
         if (isset($validatedData['email'])) {
             $usedUser = User::where('email', $validatedData['email'])->first();
-            if ($usedUser?->id !== $user->id) {
+            if ($usedUser && $usedUser?->id !== $user->id) {
                 return ['data' => 'Email used', 'status' => 401];
             }
         }
@@ -50,6 +51,6 @@ class UserService implements UserServiceInterface
             }
         }
 
-        return ['message' => 'Profile updated successfully', 'status' => 200];
+        return ['user' => $user, 'status' => 200];
     }
 }
